@@ -4,9 +4,7 @@ import { usePagination, useRowSelect, useSortBy, useTable } from 'react-table'
 const Table = ({
     columns,
     data,
-    fetchData,
     loading,
-    pageCount: controlledPageCount,
 }) => {
     const {
         getTableProps,
@@ -33,7 +31,7 @@ const Table = ({
             // hook that we'll handle our own data fetching
             // This means we'll also have to provide our own
             // pageCount.
-            pageCount: controlledPageCount,
+            // pageCount: controlledPageCount,
         },
         useSortBy,
         usePagination,
@@ -93,9 +91,9 @@ const Table = ({
 
 
     // Listen for changes in pagination and use the state to fetch our new data
-    React.useEffect(() => {
-        fetchData({ pageIndex, pageSize })
-    }, [fetchData, pageIndex, pageSize])
+    // React.useEffect(() => {
+    //     fetchData({ pageIndex, pageSize })
+    // }, [fetchData, pageIndex, pageSize])
 
     // Render the UI for your table
     return (
@@ -131,7 +129,7 @@ const Table = ({
                             </tr>
                         )
                     })}
-                    <tr>
+                    {/* <tr>
                         {loading ? (
                             // Use our custom loading state to show a loading indicator
                             <td colSpan="10000">Loading...</td>
@@ -141,14 +139,14 @@ const Table = ({
                                 results
                             </td>
                         )}
-                    </tr>
+                    </tr> */}
                 </tbody>
             </table>
             {/* 
             Pagination can be built however you'd like. 
             This is just a very basic UI implementation:
           */}
-            <div className="pagination mb-20">
+            {/* <div className="pagination mb-20">
                 <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
                     {'<<'}
                 </button>{' '}
@@ -191,7 +189,7 @@ const Table = ({
                         </option>
                     ))}
                 </select>
-            </div>
+            </div> */}
         </>
     )
 }

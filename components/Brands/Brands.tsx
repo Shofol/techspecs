@@ -2,30 +2,15 @@ import React from 'react'
 import { useTable, useSortBy, useRowSelect, Column, TableInstance } from 'react-table'
 import clientPromise from '../../lib/mongodb';
 import Table from '../Table';
+import algoliasearch from 'algoliasearch/lite';
+import { Highlight, Hits, InstantSearch, Pagination, RefinementList, SearchBox } from 'react-instantsearch-hooks-web';
+import { CustomRefinementList } from '../CustomRefinementList';
 
 const Brands = ({ products, totalCount }: any) => {
+    const searchClient = algoliasearch('VIR502HXCD', '8dcae4c13be840c2b71d9b6f1c2250a8');
+
     const brands = products.map((product: any) => ({ name: product.Product.Brand, amount: 0 }))
-    const [loading, setLoading] = React.useState(false);
-    const pageCount = Math.ceil(totalCount / 20);
 
-    const data = React.useMemo(
-        () => brands,
-        []
-    )
-
-    const columns: Array<Column<any>> = React.useMemo(
-        () => [
-            {
-                Header: 'Name',
-                accessor: 'name',
-            },
-            {
-                Header: 'Amount of specifications',
-                accessor: 'amount',
-            },
-        ],
-        []
-    )
     const fetchData = () => {
         // fetch('http://localhost:3000/api/hello').then(
         //     res => {
@@ -34,7 +19,6 @@ const Brands = ({ products, totalCount }: any) => {
         // )
     }
 
-
     return (
         <div className='flex-1'>
             <div className='flex justify-between text-white bg-dark-blue px-10 pt-10 pb-28'>
@@ -42,13 +26,15 @@ const Brands = ({ products, totalCount }: any) => {
                 <button className='bg-cyan text-xs px-6 py-3'>CREATE NEW</button>
             </div>
             <div className='-my-15 mx-10'>
-                <Table
-                    columns={columns}
-                    data={data}
-                    fetchData={fetchData}
-                    loading={loading}
-                    pageCount={pageCount}
-                />
+                <InstantSearch searchClient={searchClient} indexName="test_Product">
+                    <CustomRefinementList
+                        attribute="Product.Brand"
+                        limit={2}
+                        showMore={true}
+                        showMoreLimit={3}
+                    />
+                </InstantSearch>
+
             </div>
         </div>
 

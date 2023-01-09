@@ -10,19 +10,20 @@ import clientPromise from '../lib/mongodb'
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home(props: any) {
+  // console.log(props)
 
-  const test = async () => {
-    let res = await fetch("http://localhost:3000/api/hello?pageNumber=0", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    let allPosts = await res.json();
-    console.log(allPosts)
-  }
+  // const test = async () => {
+  //   let res = await fetch("http://localhost:3000/api/hello?pageNumber=0", {
+  //     method: "GET",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //   });
+  //   let allPosts = await res.json();
+  //   console.log(allPosts)
+  // }
 
-  test();
+  // test();
   return (
     <>
       <Head>
@@ -52,13 +53,15 @@ export async function getServerSideProps() {
     const client = await clientPromise;
     const db = client.db("v4");
 
-    const products = await db
-      .collection("Product")
-      .find({})
-      .project({ Product: 1 })
-      .sort({ metacritic: -1 })
-      .limit(20)
+    const products = await db.collection("Product").aggregate([
+      { $group: { _id: "$Product.Brand", count: { $sum: 1 } }, },
+      { $sort: { _id: 1 } }
+    ])
       .toArray();
+    // .find({})
+    // // .project({ Product: 1 })
+    // // .limit(20)
+    // .toArray();
     const totalCount = await db.collection("Product").countDocuments({});
 
     return {
