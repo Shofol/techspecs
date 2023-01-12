@@ -1,62 +1,171 @@
-import React from 'react'
-import { useTable, useSortBy, useRowSelect, Column, TableInstance } from 'react-table'
-import clientPromise from '../../lib/mongodb';
-import Table from '../Table';
+import React, { useEffect, useState } from "react";
+import {
+  useTable,
+  useSortBy,
+  useRowSelect,
+  Column,
+  TableInstance,
+  Row,
+} from "react-table";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-const Brands = ({ products, totalCount }: any) => {
-    const brands = products.map((product: any) => ({ name: product.Product.Brand, amount: 0 }))
-    const [loading, setLoading] = React.useState(false);
-    const pageCount = Math.ceil(totalCount / 20);
+import clientPromise from "../../lib/mongodb";
+import Table from "../Table";
 
-    const data = React.useMemo(
-        () => brands,
-        []
-    )
+const Brands = ({ products }: any) => {
+  const [updatedBrands, setUpdatedBrands] = useState(products);
 
-    const columns: Array<Column<any>> = React.useMemo(
-        () => [
-            {
-                Header: 'Name',
-                accessor: 'name',
-            },
-            {
-                Header: 'Amount of specifications',
-                accessor: 'amount',
-            },
-        ],
-        []
-    )
-    const fetchData = () => {
-        // fetch('http://localhost:3000/api/hello').then(
-        //     res => {
-        //         alert(JSON.stringify(res))
-        //     }
-        // )
-    }
+  useEffect(() => {
+    setData(
+      updatedBrands.map((product: any) => ({
+        name: product._id,
+        amount: product.count,
+      }))
+    );
+  }, [updatedBrands]);
+  //   let brands =
+  //   const totalCount = updatedBrands.length;
+  const [loading, setLoading] = React.useState(false);
+  const pageCount = Math.ceil(updatedBrands / 20);
 
+  const [data, setData] = useState([]);
+  const [showDeleteOption, setShowDeleteOption] = useState(false);
+  const [selectedRows, setSelectedRows] = useState<SelectedFlatRow[]>([]);
 
-    return (
-        <div className='flex-1'>
-            <div className='flex justify-between text-white bg-dark-blue px-10 pt-10 pb-28'>
-                <h1 className='text-xl'>All Brands</h1>
-                <button className='bg-cyan text-xs px-6 py-3'>CREATE NEW</button>
+  const columns: Array<Column<any>> = React.useMemo(
+    () => [
+      {
+        Header: "Name",
+        accessor: "name",
+        editable: true,
+      },
+      {
+        Header: "Amount of specifications",
+        accessor: "amount",
+      },
+    ],
+    []
+  );
+
+  interface SelectedFlatRow {
+    name: String;
+    amount: Number;
+  }
+
+  const fetchData = async () => {
+    let res: any = await fetch("http://localhost:3000/api/brands", {
+      method: "GET",
+    });
+    res = await res.json();
+    setUpdatedBrands(res.data);
+  };
+
+  const updateData = async (prevValue: String, value: String) => {
+    let res = await fetch("http://localhost:3000/api/brands", {
+      method: "PUT",
+      body: JSON.stringify({
+        value,
+        prevValue,
+      }),
+    });
+    res = await res.json();
+  };
+
+  const handleDelete = async (row: Row) => {
+    let res: any = await fetch("http://localhost:3000/api/brands", {
+      method: "DELETE",
+      body: JSON.stringify({
+        value: [row.values.name],
+      }),
+    });
+    res = await res.json();
+    onDeletion(res.data);
+  };
+
+  const handleBulkDelete = async () => {
+    let res: any = await fetch("http://localhost:3000/api/brands", {
+      method: "DELETE",
+      body: JSON.stringify({
+        value: selectedRows.map((row) => row.name),
+      }),
+    });
+    res = await res.json();
+    onDeletion(res.data);
+  };
+
+  const onDeletion = (deletedItems: any[]) => {
+    toast(`🗑️ ${deletedItems.map((item) => item).join(", ")} Deleted!`, {
+      position: "top-right",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
+    fetchData();
+  };
+
+  const onRowSelection = (rows: SelectedFlatRow[]) => {
+    rows.length > 0 ? setShowDeleteOption(true) : setShowDeleteOption(false);
+    setSelectedRows(rows);
+  };
+
+  const deleteSelectedRows = () => {
+    handleBulkDelete();
+  };
+
+  return (
+    <>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+      <ToastContainer />
+      <div className="flex-1">
+        <div className="flex justify-between text-white bg-dark-blue px-10 pt-10 pb-28">
+          <h1 className="text-xl">All Brands</h1>
+          {!showDeleteOption && (
+            <button className="bg-cyan text-xs px-6 py-3">CREATE NEW</button>
+          )}
+          {showDeleteOption && (
+            <div>
+              <button className="text-xs px-6 py-3">CANCEL</button>
+              <button
+                className="bg-red-500 text-xs px-6 py-3"
+                onClick={deleteSelectedRows}
+              >
+                DELETE
+              </button>
             </div>
-            <div className='-my-15 mx-10'>
-                <Table
-                    columns={columns}
-                    data={data}
-                    fetchData={fetchData}
-                    loading={loading}
-                    pageCount={pageCount}
-                />
-            </div>
+          )}
         </div>
+        <div className="-my-15 mx-10">
+          <Table
+            columns={columns}
+            data={data}
+            loading={loading}
+            updateData={updateData}
+            handleDelete={handleDelete}
+            onRowSelection={onRowSelection}
+          />
+        </div>
+      </div>
+    </>
+  );
+};
 
-    )
-}
-
-export default Brands
-
+export default Brands;
 
 // const tableInstance: TableInstance = useTable({ columns, data },
 //     useSortBy,
@@ -101,7 +210,6 @@ export default Brands
 //     prepareRow
 // } = tableInstance
 
-
 // const IndeterminateCheckbox = React.forwardRef(
 //     (props: any, ref) => {
 //         const { indeterminate, ...rest } = props;
@@ -122,8 +230,8 @@ export default Brands
 
 // IndeterminateCheckbox.displayName = 'IndeterminateCheckbox';
 
-
-{/* <table {...getTableProps()} className="w-full ">
+{
+  /* <table {...getTableProps()} className="w-full ">
                     <thead className='bg-med-blue text-med-light-gray text-left'>
                         {headerGroups.map(headerGroup => (
                             <tr {...headerGroup.getHeaderGroupProps()} >
@@ -161,4 +269,5 @@ export default Brands
                             )
                         })}
                     </tbody>
-                </table> */}
+                </table> */
+}
