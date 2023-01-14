@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
-  Column,
   Row,
+  TableProps,
   usePagination,
   useRowSelect,
   useSortBy,
@@ -15,6 +15,12 @@ const Table = ({
   updateData,
   handleDelete,
   onRowSelection,
+  resetData,
+  editable,
+  manualPagination,
+  fetchData,
+  enableSelection,
+  pageCount: controlledPageCount,
 }: {
   columns: any[];
   data: any[];
@@ -22,6 +28,12 @@ const Table = ({
   updateData: Function;
   handleDelete: Function;
   onRowSelection: Function;
+  resetData: Function;
+  editable: boolean;
+  manualPagination?: boolean;
+  fetchData?: Function;
+  enableSelection: boolean;
+  pageCount?: number;
 }) => {
   const [skipPageReset, setSkipPageReset] = React.useState(false);
   const [editableRowIndex, setEditableRowIndex] = React.useState(null);
@@ -50,9 +62,9 @@ const Table = ({
     };
 
     // We'll only update the external data when the input is blurred
-    const onBlur = () => {
-      updateMyData(row, column.id, prevValue, value);
-    };
+    // const onBlur = () => {
+    //   updateMyData(row, column.id, prevValue, value);
+    // };
 
     // If the initialValue is changed externall, sync it up with our state
     useEffect(() => {
@@ -64,7 +76,7 @@ const Table = ({
         className="border-2 border-blue-500 rounded-sm px-2"
         value={value}
         onChange={onChange}
-        onBlur={onBlur}
+        // onBlur={onBlur}
       />
     ) : (
       <p>{value}</p>
@@ -88,6 +100,26 @@ const Table = ({
     handleDelete(row);
   };
 
+  let tableParams: any = {
+    columns,
+    data,
+    defaultColumn,
+    initialState: { pageIndex: 0, pageSize: 20 }, // Pass our hoisted table state
+    autoResetPage: !skipPageReset,
+    updateMyData,
+    // pass state variables so that we can access them in edit hook later
+    editableRowIndex,
+    setEditableRowIndex, // setState hook for toggling edit on/off switch
+  };
+
+  tableParams = manualPagination
+    ? {
+        ...tableParams,
+        pageCount: controlledPageCount,
+        manualPagination: true,
+      }
+    : tableParams;
+
   const {
     getTableProps,
     getTableBodyProps,
@@ -106,27 +138,8 @@ const Table = ({
     selectedFlatRows,
     // Get the state from the instance
     state: { pageIndex, pageSize },
-  } = useTable(
-    {
-      columns,
-      data,
-      defaultColumn,
-      initialState: { pageIndex: 0, pageSize: 10 }, // Pass our hoisted table state
-      autoResetPage: !skipPageReset,
-      // updateMyData isn't part of the API, but
-      // anything we put into these options will
-      // automatically be available on the instance.
-      // That way we can call this function from our
-      // cell renderer!
-      updateMyData,
-      // pass state variables so that we can access them in edit hook later
-      editableRowIndex,
-      setEditableRowIndex, // setState hook for toggling edit on/off switch
-    },
-    useSortBy,
-    usePagination,
-    useRowSelect,
-    (hooks) => {
+  } = useTable(tableParams, useSortBy, usePagination, useRowSelect, (hooks) => {
+    if (enableSelection) {
       hooks.visibleColumns.push((columns) => [
         // Let's make a column for selection
         {
@@ -153,6 +166,12 @@ const Table = ({
             );
           },
         },
+        ...columns,
+      ]);
+    }
+
+    if (editable) {
+      hooks.visibleColumns.push((columns) => [
         ...columns,
         // pass edit hook
         {
@@ -205,22 +224,29 @@ const Table = ({
                 (row.index === hoverdRowIndex ? "opacity-100" : "opacity-0")
               }
               onClick={() => {
-                deleteData(row);
+                if (editableRowIndex !== row.index) {
+                  deleteData(row);
+                } else {
+                  setEditableRowIndex(null);
+                  resetData();
+                  console.log(row);
+                }
               }}
             >
-              <div className="flex items-center hover:opacity-70">
-                <img src="/trash.svg" alt="Edit" className="w-3 mr-1" />
-                <span className="text-red-500">DELETE</span>
-              </div>
-              {/* single action button supporting 2 modes */}
-              {/* {editableRowIndex !== row.index ? <div className='flex items-center'><img src="/edit.svg" alt="Edit" className='w-3 mr-1' />
-                                <span>Edit</span></div> : <span className='text-blue-500'>SAVE CHANGES</span>} */}
+              {editableRowIndex !== row.index ? (
+                <div className="flex items-center hover:opacity-70">
+                  <img src="/trash.svg" alt="Edit" className="w-3 mr-1" />
+                  <span className="text-red-500">DELETE</span>
+                </div>
+              ) : (
+                <span className="text-blue-500 hover:opacity-70">CANCEL</span>
+              )}
             </button>
           ),
         },
       ]);
     }
-  );
+  });
 
   useEffect(() => {
     onRowSelection(selectedFlatRows.map((d) => d.original));
@@ -247,14 +273,31 @@ const Table = ({
   const [currentPageList, setCurrentPageList] = useState<Number[]>([]);
 
   useEffect(() => {
-    if (pageOptions.length > 5) {
-      setCurrentPageList([...Array(5)].map((item, index) => index + 1));
-    } else {
-      setCurrentPageList(
-        [...Array(pageOptions.length)].map((item, index) => index + 1)
-      );
+    if (!manualPagination) {
+      if (pageOptions.length > 5) {
+        setCurrentPageList([...Array(5)].map((item, index) => index + 1));
+      } else {
+        setCurrentPageList(
+          [...Array(pageOptions.length)].map((item, index) => index + 1)
+        );
+      }
     }
-  }, [pageOptions]);
+    if (manualPagination) {
+      if (+pageCount > 5) {
+        setCurrentPageList([...Array(5)].map((item, index) => index + 1));
+      } else {
+        setCurrentPageList(
+          [...Array(+pageCount)].map((item, index) => index + 1)
+        );
+      }
+    }
+  }, [pageOptions, pageCount]);
+
+  useEffect(() => {
+    // alert(pageIndex);
+    fetchData && fetchData(pageIndex);
+    setSkipPageReset(true);
+  }, [pageIndex]);
 
   const handlePageClick = (event: any) => {
     const value = +event.target.innerHTML;
@@ -337,14 +380,6 @@ const Table = ({
         </tbody>
       </table>
       <div className="flex justify-center items-center">
-        {/* 
-            Pagination can be built however you'd like. 
-            This is just a very basic UI implementation:
-          */}
-        {/* 
-        Pagination can be built however you'd like. 
-        This is just a very basic UI implementation:
-      */}
         <div className="pagination flex mb-20 text-light-blue">
           <button
             className="bg-white px-3 py-1 rounded-tl-md rounded-bl-md hover:bg-slate-400 hover:text-white duration-100"
@@ -372,12 +407,6 @@ const Table = ({
               {page.toString()}
             </button>
           ))}
-          {/* <span>
-                    Page{' '}
-                    <strong>
-                        {pageIndex + 1} of {pageOptions.length}
-                    </strong>{' '}
-                </span> */}
           <button
             className="bg-white px-3 py-1 hover:bg-slate-400 hover:text-white duration-100"
             onClick={() => nextPage()}
@@ -387,35 +416,13 @@ const Table = ({
           </button>{" "}
           <button
             className="bg-white px-3 py-1 rounded-tr-md rounded-br-md hover:bg-slate-400 hover:text-white duration-100"
-            onClick={() => gotoPage(pageCount - 1)}
+            onClick={() =>
+              gotoPage(manualPagination ? pageCount - 1 : pageOptions.length)
+            }
             disabled={!canNextPage}
           >
             {">>"}
           </button>{" "}
-          {/* <span>
-                    | Go to page:{' '}
-                    <input
-                        type="number"
-                        defaultValue={pageIndex + 1}
-                        onChange={e => {
-                            const page = e.target.value ? Number(e.target.value) - 1 : 0
-                            gotoPage(page)
-                        }}
-                        style={{ width: '100px' }}
-                    />
-                </span>{' '}
-                <select
-                    value={pageSize}
-                    onChange={e => {
-                        setPageSize(Number(e.target.value))
-                    }}
-                >
-                    {[10, 20, 30, 40, 50].map(pageSize => (
-                        <option key={pageSize} value={pageSize}>
-                            Show {pageSize}
-                        </option>
-                    ))}
-                </select> */}
         </div>
       </div>
     </>

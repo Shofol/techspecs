@@ -3,17 +3,20 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Brands from "../components/Brands/Brands";
 import clientPromise from "../lib/mongodb";
+import CategoriesComponent from "../components/Categories/Categories";
 
-export default function Home(props: any) {
+export default function Categories(props: any) {
   return (
     <>
       <Head>
-        <title>TechSpecs</title>
-        <meta name="description" content="TechSpecs" />
+        <Head>
+          <title>TechSpecs Categories</title>
+          <meta name="description" content="TechSpecs" />
+        </Head>
       </Head>
       <main className="min-h-screen flex flex-col justify-between bg-light-gray">
         <Navbar />
-        <Brands products={props.products} />
+        <CategoriesComponent products={props.products} />
         <Footer />
       </main>
     </>
@@ -30,7 +33,7 @@ export async function getServerSideProps() {
       .aggregate([
         {
           $group: {
-            _id: "$Product.Brand",
+            _id: "$Product.Category",
             document: { $push: { id: "$_id" } },
             count: { $sum: 1 },
           },

@@ -53,6 +53,19 @@ const Brands = ({ products }: any) => {
     amount: Number;
   }
 
+  const resetData = () => {
+    setData([]);
+    setTimeout(() => {
+      setData(data);
+    }, 10);
+  };
+
+  const handleCancel = () => {
+    setShowDeleteOption(false);
+    setSelectedRows([]);
+    resetData();
+  };
+
   const fetchData = async () => {
     let res: any = await fetch("http://localhost:3000/api/brands", {
       method: "GET",
@@ -140,7 +153,9 @@ const Brands = ({ products }: any) => {
           )}
           {showDeleteOption && (
             <div>
-              <button className="text-xs px-6 py-3">CANCEL</button>
+              <button className="text-xs px-6 py-3" onClick={handleCancel}>
+                CANCEL
+              </button>
               <button
                 className="bg-red-500 text-xs px-6 py-3"
                 onClick={deleteSelectedRows}
@@ -158,6 +173,9 @@ const Brands = ({ products }: any) => {
             updateData={updateData}
             handleDelete={handleDelete}
             onRowSelection={onRowSelection}
+            resetData={resetData}
+            editable={true}
+            enableSelection={true}
           />
         </div>
       </div>
