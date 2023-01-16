@@ -67,7 +67,7 @@ const Brands = ({ products }: any) => {
   };
 
   const fetchData = async () => {
-    let res: any = await fetch("http://localhost:3000/api/brands", {
+    let res: any = await fetch("/api/brands", {
       method: "GET",
     });
     res = await res.json();
@@ -75,7 +75,7 @@ const Brands = ({ products }: any) => {
   };
 
   const updateData = async (prevValue: String, value: String) => {
-    let res = await fetch("http://localhost:3000/api/brands", {
+    let res = await fetch("/api/brands", {
       method: "PUT",
       body: JSON.stringify({
         value,
@@ -86,7 +86,7 @@ const Brands = ({ products }: any) => {
   };
 
   const handleDelete = async (row: Row) => {
-    let res: any = await fetch("http://localhost:3000/api/brands", {
+    let res: any = await fetch("/api/brands", {
       method: "DELETE",
       body: JSON.stringify({
         value: [row.values.name],
@@ -97,7 +97,7 @@ const Brands = ({ products }: any) => {
   };
 
   const handleBulkDelete = async () => {
-    let res: any = await fetch("http://localhost:3000/api/brands", {
+    let res: any = await fetch("/api/brands", {
       method: "DELETE",
       body: JSON.stringify({
         value: selectedRows.map((row) => row.name),

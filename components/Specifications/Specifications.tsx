@@ -32,11 +32,12 @@ const Specifications = ({ products, totalSpecs }: any) => {
   }, [updatedBrands]);
 
   const [loading, setLoading] = React.useState(false);
-  const pageCount = Math.ceil(totalSpecs / 20);
+  const [pageCount, setPageCount] = useState(Math.ceil(totalSpecs / 20));
 
   const [data, setData] = useState([]);
   const [showDeleteOption, setShowDeleteOption] = useState(false);
   const [selectedRows, setSelectedRows] = useState<SelectedFlatRow[]>([]);
+  const [searchText, setSearchedText] = useState<String>("");
 
   const columns: Array<Column<any>> = React.useMemo(
     () => [
@@ -83,7 +84,8 @@ const Specifications = ({ products, totalSpecs }: any) => {
             <input
               type="text"
               className="border-0 outline-none text-med-blue bg-med-light-gray rounded-sm mr-2 p-2"
-              onChange={(e) => handleSearch(e.target.value)}
+              // onBlur={(e) => handleSearch(e.target.value, 0)}
+              onKeyUp={(e: any) => handleSearch(e.target.value, 0)}
             />
             <Image
               src={"/Search.svg"}
@@ -105,15 +107,17 @@ const Specifications = ({ products, totalSpecs }: any) => {
     amount: Number;
   }
 
-  const handleSearch = async (searchText: String) => {
+  const handleSearch = async (searchText: String, pageIndex: Number) => {
     let res: any = await fetch(
-      `http://localhost:3000/api/search?searchText=${searchText}`,
+      `/api/search?searchText=${searchText}&pageIndex=${pageIndex}`,
       {
         method: "GET",
       }
     );
     res = await res.json();
-    setUpdatedBrands(res.data);
+    setUpdatedBrands(res.data.products);
+    setPageCount(Math.ceil(+res.data.count / 20));
+    setSearchedText(searchText);
   };
 
   const resetData = () => {
@@ -130,18 +134,20 @@ const Specifications = ({ products, totalSpecs }: any) => {
   };
 
   const fetchData = async (pageIndex: Number) => {
-    let res: any = await fetch(
-      `http://localhost:3000/api/specs?pageIndex=${pageIndex}`,
-      {
-        method: "GET",
-      }
-    );
+    if (searchText !== "") {
+      handleSearch(searchText, pageIndex);
+      return;
+    }
+
+    let res: any = await fetch(`/api/specs?pageIndex=${pageIndex}`, {
+      method: "GET",
+    });
     res = await res.json();
     setUpdatedBrands(res.data);
   };
 
   const updateData = async (prevValue: String, value: String) => {
-    let res = await fetch("http://localhost:3000/api/specs", {
+    let res = await fetch("/api/specs", {
       method: "PUT",
       body: JSON.stringify({
         value,
@@ -152,7 +158,7 @@ const Specifications = ({ products, totalSpecs }: any) => {
   };
 
   const handleDelete = async (row: Row) => {
-    let res: any = await fetch("http://localhost:3000/api/specs", {
+    let res: any = await fetch("/api/specs", {
       method: "DELETE",
       body: JSON.stringify({
         value: [row.values.name],
@@ -163,7 +169,7 @@ const Specifications = ({ products, totalSpecs }: any) => {
   };
 
   const handleBulkDelete = async () => {
-    let res: any = await fetch("http://localhost:3000/api/brands", {
+    let res: any = await fetch("/api/brands", {
       method: "DELETE",
       body: JSON.stringify({
         value: selectedRows.map((row) => row.name),

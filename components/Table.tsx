@@ -7,7 +7,7 @@ import {
   useSortBy,
   useTable,
 } from "react-table";
-
+import Image from "next/image";
 const Table = ({
   columns,
   data,
@@ -73,7 +73,7 @@ const Table = ({
 
     return row.index === editableRowIndex && column.editable ? (
       <input
-        className="border-2 border-blue-500 rounded-sm px-2"
+        className="border-2 border-blue rounded-sm px-2 py-2"
         value={value}
         onChange={onChange}
         // onBlur={onBlur}
@@ -137,13 +137,14 @@ const Table = ({
     setPageSize,
     selectedFlatRows,
     // Get the state from the instance
-    state: { pageIndex, pageSize },
+    state: { pageIndex = 0, pageSize },
   } = useTable(tableParams, useSortBy, usePagination, useRowSelect, (hooks) => {
     if (enableSelection) {
       hooks.visibleColumns.push((columns) => [
         // Let's make a column for selection
         {
           id: "selection",
+          disableSortBy: true,
           // The header can use the table's getToggleAllRowsSelectedProps method
           // to render a checkbox
           // @ts-nocheck
@@ -178,6 +179,8 @@ const Table = ({
           //   Header: "Edit",
           accessor: "edit",
           id: "edit",
+          disableSortBy: true,
+          width: 5,
           Cell: ({ row, setEditableRowIndex, editableRowIndex }) => (
             <button
               className={
@@ -216,6 +219,9 @@ const Table = ({
         {
           accessor: "delete",
           id: "delete",
+          disableSortBy: true,
+          width: 5,
+
           // Header: "Delete",
           Cell: ({ row, setEditableRowIndex, editableRowIndex }) => (
             <button
@@ -337,17 +343,49 @@ const Table = ({
               {headerGroup.headers.map((column, i) => (
                 <th
                   {...column.getHeaderProps(column.getSortByToggleProps())}
-                  className="py-5 px-10 text-sm"
+                  className="py-5 px-10 text-sm "
                   key={i}
                 >
-                  {column.render("Header")}
-                  <span>
-                    {column.isSorted
+                  <div className="flex items-center">
+                    {column.render("Header")}
+                    {!column.disableSortBy && (
+                      <span className="flex flex-col ml-2">
+                        <Image
+                          src="/up.svg"
+                          alt="up icon"
+                          width={5}
+                          height={6}
+                          className={
+                            "mb-px " +
+                            (column.isSorted
+                              ? !column.isSortedDesc
+                                ? "opacity-100"
+                                : "opacity-60"
+                              : "opacity-60")
+                          }
+                        />
+                        <Image
+                          src="/down.svg"
+                          alt="down icon"
+                          width={5}
+                          height={6}
+                          className={
+                            column.isSorted
+                              ? column.isSortedDesc
+                                ? "opacity-100"
+                                : "opacity-60"
+                              : "opacity-60"
+                          }
+                        />
+
+                        {/* {column.isSorted
                       ? column.isSortedDesc
                         ? " 🔽"
                         : " 🔼"
-                      : ""}
-                  </span>
+                      : ""} */}
+                      </span>
+                    )}
+                  </div>
                 </th>
               ))}
             </tr>
@@ -366,7 +404,7 @@ const Table = ({
                 {row.cells.map((cell, index) => {
                   return (
                     <td
-                      className="text-light-blue px-10 py-5 text-sm"
+                      className="text-light-blue pl-10 py-5 text-sm"
                       {...cell.getCellProps()}
                       key={index}
                     >
@@ -390,7 +428,10 @@ const Table = ({
           </button>{" "}
           <button
             className="bg-white px-2 py-1 hover:bg-slate-400 hover:text-white duration-100"
-            onClick={() => previousPage()}
+            onClick={() => {
+              // previousPage();
+              handlePageClick({ target: { innerHTML: pageIndex } });
+            }}
             disabled={!canPreviousPage}
           >
             {"<"}
@@ -409,7 +450,10 @@ const Table = ({
           ))}
           <button
             className="bg-white px-3 py-1 hover:bg-slate-400 hover:text-white duration-100"
-            onClick={() => nextPage()}
+            onClick={() => {
+              // nextPage();
+              handlePageClick({ target: { innerHTML: pageIndex + 2 } });
+            }}
             disabled={!canNextPage}
           >
             {">"}
@@ -417,7 +461,11 @@ const Table = ({
           <button
             className="bg-white px-3 py-1 rounded-tr-md rounded-br-md hover:bg-slate-400 hover:text-white duration-100"
             onClick={() =>
-              gotoPage(manualPagination ? pageCount - 1 : pageOptions.length)
+              handlePageClick(
+                manualPagination
+                  ? { target: { innerHTML: pageCount } }
+                  : { target: { innerHTML: pageOptions.length } }
+              )
             }
             disabled={!canNextPage}
           >

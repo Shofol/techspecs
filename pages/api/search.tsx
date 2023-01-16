@@ -38,11 +38,21 @@ export default async function handler(
     //   break;
     case "GET":
       const searchText: any = req.query.searchText;
+      const pageIndex: any = req.query.pageIndex;
       const products = await db
         .collection("Product")
         .find({ $text: { $search: `'${searchText}'` } })
+        .skip(+pageIndex * 20)
+        .limit(20)
         .toArray();
-      res.json({ status: 200, data: products });
+
+      const count = await db
+        .collection("Product")
+        .count({ $text: { $search: `'${searchText}'` } });
+      res.json({
+        status: 200,
+        data: { products, count, pageIndex: pageIndex },
+      });
       break;
   }
 }
