@@ -10,9 +10,13 @@ export default async function handler(
   const client = await clientPromise;
   const db = client.db("v4");
   let bodyObject = req.body ? JSON.parse(req.body) : {};
-  db.collection("Product").createIndex({ "Product.Brand": "text" });
+  // db.collection("Product").createIndex({ "Product.Brand": "text" });
 
   switch (req.method) {
+    case "POST":
+      await db.collection("Product").insertOne(bodyObject.value);
+      res.json(bodyObject.value);
+      break;
     // case "PUT":
     //   await db
     //     .collection("Product")
@@ -36,7 +40,7 @@ export default async function handler(
       const products = await db
         .collection("Product")
         .find({})
-        .sort({ "Product.Brand": -1 })
+        .sort({ "Product.Brand": 1 })
         .skip(+pageIndex * 20)
         .limit(20)
         .toArray();

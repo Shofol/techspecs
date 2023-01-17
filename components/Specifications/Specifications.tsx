@@ -48,7 +48,11 @@ const Specifications = ({ products, totalSpecs }: any) => {
           <div>
             <Image
               className="w-10"
-              src={tableProps.row.original.image}
+              src={
+                tableProps.row.original.image
+                  ? tableProps.row.original.image
+                  : "/no-image.png"
+              }
               alt={tableProps.row.original.model}
               width={100}
               height={100}
