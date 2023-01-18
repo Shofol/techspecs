@@ -17,9 +17,11 @@ module.exports = {
         "light-gray": "#F2F2F2",
         "lighter-gray": "d1dfe4",
         "deepest-gray": "#E5E7EF",
+        "mild-gray": "#f9fafc",
         cyan: "#44C0FF",
         lime: "#8BD001",
         blue: "#3C96FF",
+        link: "#00C1FF",
       },
       spacing: {
         15: "3.75rem",

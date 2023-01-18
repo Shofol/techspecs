@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import TooltipCheckbox from "./TooltipCheckbox";
 
@@ -57,7 +57,7 @@ const RecursiveComponent = ({ data, formik }: { data: any; formik: any }) => {
                           className="p-2 w-full placeholder:text-deep-gray"
                           placeholder={`Enter ${key}`}
                           onChange={formik.handleChange}
-                          value={formik.values[`"${key}"`]}
+                          value={formik.values[`${key}`]}
                         />
                       </div>
                       <TooltipCheckbox />
