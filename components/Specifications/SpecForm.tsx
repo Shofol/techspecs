@@ -181,4 +181,6 @@ const SpecForm = forwardRef(
   }
 );
 
+SpecForm.displayName = "SpecForm";
+
 export default SpecForm;
