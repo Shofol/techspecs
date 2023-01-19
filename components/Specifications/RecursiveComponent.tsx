@@ -69,7 +69,8 @@ const RecursiveComponent = ({
                 key !== "type" &&
                 key !== "category" &&
                 key !== "language" &&
-                key !== "id" && (
+                key !== "id" &&
+                key !== "_id" && (
                   <div className="flex py-6 border-b border-x border-deepest-gray">
                     <div className="flex flex-col flex-1">
                       <div className="flex-1 border border-deepest-gray rounded-sm ml-4 mr-2  flex items-center">

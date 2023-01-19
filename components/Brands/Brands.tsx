@@ -152,14 +152,13 @@ const Brands = ({ products }: any) => {
     delete schema.category;
     try {
       setLoading(true);
-      let res = await fetch("/api/specs", {
+      let res: any = await fetch("/api/specs", {
         method: "POST",
         body: JSON.stringify({
           value: schema,
         }),
       });
       res = await res.json();
-      console.log(res);
       setLoading(false);
       // router.query = { id: res._id };
       router.push(`/createSpec?id=${res._id}`);
@@ -224,108 +223,3 @@ const Brands = ({ products }: any) => {
 };
 
 export default Brands;
-
-// const tableInstance: TableInstance = useTable({ columns, data },
-//     useSortBy,
-//     useRowSelect,
-//     hooks => {
-//         hooks.visibleColumns.push(columns => [
-//             // Let's make a column for selection
-//             {
-//                 id: 'selection',
-//                 // The header can use the table's getToggleAllRowsSelectedProps method
-//                 // to render a checkbox
-//                 // @ts-nocheck
-//                 Header: (props: any) => {
-//                     const { getToggleAllRowsSelectedProps } = props;
-//                     return (
-//                         <div>
-//                             <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
-//                         </div>
-//                     )
-//                 },
-//                 // The cell can use the individual row's getToggleRowSelectedProps method
-//                 // to the render a checkbox
-//                 // @ts-nocheck
-//                 Cell: (props: any) => {
-//                     const { row } = props;
-//                     return (
-//                         <div>
-//                             <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
-//                         </div>
-//                     )
-//                 },
-//             },
-//             ...columns,
-//         ])
-//     });
-
-// const {
-//     getTableProps,
-//     getTableBodyProps,
-//     headerGroups,
-//     rows,
-//     prepareRow
-// } = tableInstance
-
-// const IndeterminateCheckbox = React.forwardRef(
-//     (props: any, ref) => {
-//         const { indeterminate, ...rest } = props;
-//         const defaultRef = React.useRef()
-//         const resolvedRef: any = ref || defaultRef
-
-//         React.useEffect(() => {
-//             resolvedRef.current.indeterminate = indeterminate
-//         }, [resolvedRef, indeterminate])
-
-//         return (
-//             <>
-//                 <input type="checkbox" ref={resolvedRef} {...rest} />
-//             </>
-//         )
-//     }
-// )
-
-// IndeterminateCheckbox.displayName = 'IndeterminateCheckbox';
-
-{
-  /* <table {...getTableProps()} className="w-full ">
-                    <thead className='bg-med-blue text-med-light-gray text-left'>
-                        {headerGroups.map(headerGroup => (
-                            <tr {...headerGroup.getHeaderGroupProps()} >
-                                {headerGroup.headers.map((column: any) => (
-                                    <th
-                                        {...column.getHeaderProps(column.getSortByToggleProps())}
-                                        className="py-5 px-10 text-sm"
-                                    >
-                                        {column.render('Header')}
-                                        <span>
-                                            {column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}
-                                        </span>
-                                    </th>
-                                ))}
-                            </tr>
-                        ))}
-                    </thead>
-                    <tbody {...getTableBodyProps()}>
-                        {rows.map(row => {
-                            prepareRow(row)
-                            return (
-                                <tr {...row.getRowProps()}
-                                    className="odd:bg-white even:bg-med-gray">
-                                    {row.cells.map(cell => {
-                                        return (
-                                            <td
-                                                {...cell.getCellProps()}
-                                                className="text-light-blue px-10 py-5 text-sm"
-                                            >
-                                                {cell.render('Cell')}
-                                            </td>
-                                        )
-                                    })}
-                                </tr>
-                            )
-                        })}
-                    </tbody>
-                </table> */
-}

@@ -13,6 +13,7 @@ import algoliasearch from "algoliasearch";
 import Image from "next/image";
 import { useS3Upload, getImageData } from "next-s3-upload";
 import SuggestionList from "./SuggestionList";
+import Link from "next/link";
 
 const SpecForm = forwardRef(
   (
@@ -187,6 +188,7 @@ const SpecForm = forwardRef(
           delete finalData.language;
           delete finalData.type;
           delete finalData.category;
+          delete finalData._id;
         }
         let res = null;
         if (isSchemaPage) {
@@ -209,8 +211,8 @@ const SpecForm = forwardRef(
         } else {
           try {
             setLoading(true);
-            res = await fetch("/api/specs", {
-              method: "POST",
+            res = await fetch(`/api/specification?id=${router.query.id}`, {
+              method: "PUT",
               body: JSON.stringify({
                 value: finalData,
               }),
@@ -460,6 +462,7 @@ const SpecForm = forwardRef(
                                 alt="new image"
                               />
                               <button
+                                type="button"
                                 className="absolute -top-3 -right-3"
                                 onClick={() => deleteImage(imageUrl)}
                               >
@@ -477,6 +480,7 @@ const SpecForm = forwardRef(
                     {images.length < imageLimit && (
                       <button
                         className="border border-deep-gray bg-mild-gray rounded-md w-24 h-24 flex justify-center items-center  mb-3"
+                        type="button"
                         onClick={openFileDialog}
                       >
                         <Image
@@ -566,12 +570,13 @@ const SpecForm = forwardRef(
               >
                 CANCEL
               </button>
-              <button
+              <Link
+                href={`https://techspecs.io/view/${formik.values.Model}?id=${router.query.id}`}
                 className="bg-blue text-xs rounded-sm px-6 py-3 mr-6 text-white"
                 //   onClick={handleCancel}
               >
                 PREVIEW
-              </button>
+              </Link>
               <button
                 className="bg-lime text-xs rounded-sm px-6 py-3 text-white"
                 type="submit"

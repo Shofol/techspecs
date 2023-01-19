@@ -4,12 +4,6 @@ import Loader from "../Loader/Loader";
 import { useRouter } from "next/router";
 
 const CreateSpecification = () => {
-  useEffect(() => {
-    fetchSchema();
-    // fetchBrands();
-    // fetchCategories();
-  }, []);
-
   const [schema, setSchema] = useState<any>(null);
   // const [brands, setBrands] = useState([]);
   // const [categories, setCategories] = useState([]);
@@ -24,9 +18,17 @@ const CreateSpecification = () => {
   const [loading, setLoading] = useState(false);
   const modelRef = useRef<any>(null);
   const versionRef = useRef<any>(null);
-  const router = useRouter();
-  // const isSchemaPage = router.pathname === "/schema";
+  const router: any = useRouter();
+  const isSchemaPage = router.pathname === "/schema";
   const formRef = useRef<any>();
+
+  useEffect(() => {
+    if (router) {
+      fetchSchema();
+    }
+    // fetchBrands();
+    // fetchCategories();
+  }, [router]);
 
   // const fetchBrands = async () => {
   //   let res: any = await fetch("/api/brands", {
@@ -47,12 +49,23 @@ const CreateSpecification = () => {
   // };
 
   const fetchSchema = async () => {
-    let res: any = await fetch("/api/schema", {
-      method: "GET",
-    });
-    res = await res.json();
-    const obj = res.data[0].data;
-    setSchema(obj);
+    if (isSchemaPage) {
+      let res: any = await fetch("/api/schema", {
+        method: "GET",
+      });
+      res = await res.json();
+      const obj = res.data[0].data;
+      setSchema(obj);
+    } else {
+      const id = router.query.id;
+      let res: any = await fetch(`/api/specification?id=${id}`, {
+        method: "GET",
+      });
+      res = await res.json();
+      const obj = res.data;
+      console.log(obj);
+      setSchema(obj);
+    }
   };
 
   // const handleCategoryClick = () => {
@@ -68,8 +81,8 @@ const CreateSpecification = () => {
   // };
 
   const clearData = () => {
-    setSelectedBrand("");
-    setSelectedCategory("");
+    // setSelectedBrand("");
+    // setSelectedCategory("");
     modelRef.current.value = "";
     versionRef.current.value = "";
   };
@@ -93,6 +106,7 @@ const CreateSpecification = () => {
             <button
               className="bg-blue text-xs px-6 py-3 mr-6"
               // onClick={handleCancel}
+              onClick={() => formRef.current.handleSubmit()}
             >
               PREVIEW
             </button>
