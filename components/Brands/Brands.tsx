@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import {
   useTable,
@@ -32,6 +33,21 @@ const Brands = ({ products }: any) => {
   const [data, setData] = useState([]);
   const [showDeleteOption, setShowDeleteOption] = useState(false);
   const [selectedRows, setSelectedRows] = useState<SelectedFlatRow[]>([]);
+  const [schema, setSchema] = useState<any>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    fetchSchema();
+  }, []);
+
+  const fetchSchema = async () => {
+    let res: any = await fetch("/api/schema", {
+      method: "GET",
+    });
+    res = await res.json();
+    const obj = res.data[0].data;
+    setSchema(obj);
+  };
 
   const columns: Array<Column<any>> = React.useMemo(
     () => [
@@ -130,6 +146,28 @@ const Brands = ({ products }: any) => {
     handleBulkDelete();
   };
 
+  const createNew = async () => {
+    delete schema.language;
+    delete schema.type;
+    delete schema.category;
+    try {
+      setLoading(true);
+      let res = await fetch("/api/specs", {
+        method: "POST",
+        body: JSON.stringify({
+          value: schema,
+        }),
+      });
+      res = await res.json();
+      console.log(res);
+      setLoading(false);
+      // router.query = { id: res._id };
+      router.push(`/createSpec?id=${res._id}`);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
       <ToastContainer
@@ -149,7 +187,9 @@ const Brands = ({ products }: any) => {
         <div className="flex justify-between text-white bg-dark-blue px-10 pt-10 pb-28">
           <h1 className="text-xl">All Brands</h1>
           {!showDeleteOption && (
-            <button className="bg-cyan text-xs px-6 py-3">CREATE NEW</button>
+            <button className="bg-cyan text-xs px-6 py-3" onClick={createNew}>
+              CREATE NEW
+            </button>
           )}
           {showDeleteOption && (
             <div>

@@ -11,15 +11,10 @@ export default async function handler(
   const db = client.db("v4");
   let bodyObject = req.body ? JSON.parse(req.body) : {};
   switch (req.method) {
-    // case "PUT":
-    //   await db
-    //     .collection("Product")
-    //     .updateMany(
-    //       { "Product.Category": { $eq: bodyObject.prevValue } },
-    //       { $set: { "Product.Category": bodyObject.value } }
-    //     );
-    //   res.json(bodyObject.value);
-    //   break;
+    case "POST":
+      await db.collection("schemas").insertOne(bodyObject.value);
+      res.json(bodyObject.value);
+      break;
     // case "DELETE":
     //   const entriesToDelete = bodyObject.value.map((entry: any) => ({
     //     "Product.Category": { $eq: `${entry}` },

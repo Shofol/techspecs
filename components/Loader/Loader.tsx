@@ -16,7 +16,7 @@ const Loader = ({ showLoader }: { showLoader: boolean }) => {
   return (
     <>
       {showLoader && (
-        <div className=" z-10 w-screen h-screen fixed after:content-[''] after:left-0 after:top-0 after:w-full after:h-full after:opacity-60 after:bg-white after:absolute flex justify-center items-center">
+        <div className=" z-10 w-screen h-screen fixed top-0 left-0 after:content-[''] after:left-0 after:top-0 after:w-full after:h-full after:opacity-60 after:bg-white after:absolute flex justify-center items-center">
           <Image src="/spinner.gif" width={100} height={100} alt="spinner" />
         </div>
       )}

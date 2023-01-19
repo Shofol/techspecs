@@ -3,12 +3,12 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import CreateSpecification from "../components/Specifications/CreateSpecification";
 
-export default function CreateSpec(props: any) {
+export default function Schema(props: any) {
   return (
     <>
       <Head>
         <Head>
-          <title>Create New Specification</title>
+          <title>Update Schema</title>
           <meta name="description" content="TechSpecs" />
         </Head>
       </Head>

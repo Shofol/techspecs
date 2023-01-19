@@ -196,8 +196,6 @@ const Table = ({
                   // request for saving the updated row
                   setEditableRowIndex(null);
                   const updatedRow = row.values;
-                  console.log("updated row values:");
-                  console.log(updatedRow);
                   // call your updateRow API
                 }
               }}
@@ -235,7 +233,6 @@ const Table = ({
                 } else {
                   setEditableRowIndex(null);
                   resetData();
-                  console.log(row);
                 }
               }}
             >
