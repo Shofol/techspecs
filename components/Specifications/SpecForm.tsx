@@ -43,6 +43,23 @@ const SpecForm = ({ schema }: { schema: any }) => {
 
   const currentKeyRef = useRef<any>(null);
   const currentValueRef = useRef<any>(null);
+  const wrapperRef = useRef<any>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: any) {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+        if (showImageListPreview) {
+          setTimeout(() => {
+            setShowImageListPreview(false);
+          }, 100);
+        }
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [wrapperRef]);
 
   useEffect(() => {
     if (schema) {
@@ -416,7 +433,7 @@ const SpecForm = ({ schema }: { schema: any }) => {
                           className="ml-2"
                           type="button"
                           onClick={() => {
-                            setShowImageListPreview(!showImageListPreview);
+                            setShowImageListPreview(true);
                           }}
                         >
                           <Image
@@ -429,57 +446,59 @@ const SpecForm = ({ schema }: { schema: any }) => {
                       </div>
                     )}
                     <FileInput onChange={handleFileChange} />
-                    <div
-                      className={
-                        "bg-white absolute top-16 flex flex-wrap border w-80 border-deep-gray right-0 max-w-xs shadow-lg p-5 " +
-                        (showImageListPreview ? "flex" : "hidden")
-                      }
-                    >
-                      {images.length > 0 &&
-                        images.map((imageUrl: any) => {
-                          return (
-                            <div
-                              key={imageUrl}
-                              className="border border-deep-gray rounded-md w-24 h-24 flex justify-center items-center mr-3 mb-3"
-                            >
-                              <div className="relative w-20 h-20">
-                                <Image
-                                  src={imageUrl}
-                                  fill
-                                  style={{ objectFit: "contain" }}
-                                  alt="new image"
-                                />
-                                <button
-                                  type="button"
-                                  className="absolute -top-3 -right-3"
-                                  onClick={() => deleteImage(imageUrl)}
-                                >
+                    {showImageListPreview && (
+                      <div
+                        ref={wrapperRef}
+                        className={
+                          "z-10 bg-white absolute top-16 flex flex-wrap border w-80 border-deep-gray right-0 max-w-xs shadow-lg p-5 "
+                        }
+                      >
+                        {images.length > 0 &&
+                          images.map((imageUrl: any) => {
+                            return (
+                              <div
+                                key={imageUrl}
+                                className="border border-deep-gray rounded-md w-24 h-24 flex justify-center items-center mr-3 mb-3"
+                              >
+                                <div className="relative w-20 h-20">
                                   <Image
-                                    src="/close.svg"
-                                    width={16}
-                                    height={16}
+                                    src={imageUrl}
+                                    fill
+                                    style={{ objectFit: "contain" }}
                                     alt="new image"
                                   />
-                                </button>
+                                  <button
+                                    type="button"
+                                    className="absolute -top-3 -right-3"
+                                    onClick={() => deleteImage(imageUrl)}
+                                  >
+                                    <Image
+                                      src="/close.svg"
+                                      width={16}
+                                      height={16}
+                                      alt="new image"
+                                    />
+                                  </button>
+                                </div>
                               </div>
-                            </div>
-                          );
-                        })}
-                      {images.length < imageLimit && (
-                        <button
-                          className="border border-deep-gray bg-mild-gray rounded-md w-24 h-24 flex justify-center items-center  mb-3"
-                          type="button"
-                          onClick={openFileDialog}
-                        >
-                          <Image
-                            src="/plus.svg"
-                            width={15}
-                            height={15}
-                            alt="new image"
-                          />
-                        </button>
-                      )}
-                    </div>
+                            );
+                          })}
+                        {images.length < imageLimit && (
+                          <button
+                            className="border border-deep-gray bg-mild-gray rounded-md w-24 h-24 flex justify-center items-center  mb-3"
+                            type="button"
+                            onClick={openFileDialog}
+                          >
+                            <Image
+                              src="/plus.svg"
+                              width={15}
+                              height={15}
+                              alt="new image"
+                            />
+                          </button>
+                        )}
+                      </div>
+                    )}
                   </span>
                 </div>
               </div>

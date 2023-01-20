@@ -84,7 +84,7 @@ const RecursiveComponent = ({
                         <input
                           type="text"
                           name={key}
-                          className="p-2 w-full placeholder:text-deep-gray "
+                          className="p-2 w-full placeholder:text-deep-gray foucs:border focus:border-blue rounded-sm"
                           placeholder={`Enter ${key}`}
                           onChange={formik.handleChange(key)}
                           onKeyUp={(e: any) => {
