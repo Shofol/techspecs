@@ -6,6 +6,7 @@ import Table from "../Table";
 import algoliasearch from "algoliasearch";
 import Image from "next/image";
 import Loader from "../Loader/Loader";
+import { useRouter } from "next/router";
 
 const CategoriesComponent = ({ products }: any) => {
   const [updatedBrands, setUpdatedBrands] = useState(products);
@@ -26,6 +27,7 @@ const CategoriesComponent = ({ products }: any) => {
   const [data, setData] = useState([]);
   const [showDeleteOption, setShowDeleteOption] = useState(false);
   const [selectedRows, setSelectedRows] = useState<SelectedFlatRow[]>([]);
+  const router = useRouter();
   const client = algoliasearch(
     `${process.env.NEXT_PUBLIC_ALGOLIA_APP_ID}`,
     `${process.env.NEXT_PUBLIC_ALGOLIA_API_KEY}`
@@ -81,6 +83,16 @@ const CategoriesComponent = ({ products }: any) => {
     });
     res = await res.json();
     setIsLoading(false);
+    toast(`Category Updated!`, {
+      position: "top-right",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
   };
 
   const handleDelete = async (row: Row) => {
@@ -183,7 +195,14 @@ const CategoriesComponent = ({ products }: any) => {
             {selectedRows.length > 0 && <>Products From</>} Categories
           </h1>
           {!showDeleteOption && (
-            <button className="bg-cyan text-xs px-6 py-3">CREATE NEW</button>
+            <button
+              className="bg-cyan text-xs px-6 py-3"
+              onClick={() => {
+                router.push("/schema");
+              }}
+            >
+              CREATE NEW
+            </button>
           )}
           {showDeleteOption && (
             <div>

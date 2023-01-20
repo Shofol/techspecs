@@ -1,12 +1,10 @@
 // posts.js
 
+import { ObjectId } from "mongodb";
 import { NextApiRequest, NextApiResponse } from "next";
 import clientPromise from "../../lib/mongodb";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function handler(req: any, res: NextApiResponse) {
   const client = await clientPromise;
   const db = client.db("v4");
   let bodyObject = req.body ? JSON.parse(req.body) : {};
@@ -26,15 +24,14 @@ export default async function handler(
     //     );
     //   res.json(bodyObject.value);
     //   break;
-    // case "DELETE":
-    //   const entriesToDelete = bodyObject.value.map((entry: any) => ({
-    //     "Product.Brand": { $eq: `${entry}` },
-    //   }));
-    //   await db.collection("Product").deleteMany({
-    //     $or: entriesToDelete,
-    //   });
-    //   res.json({ status: 200, data: bodyObject.value });
-    //   break;
+    case "DELETE":
+      try {
+        db.collection("Product").deleteOne({ _id: new ObjectId(req.query.id) });
+      } catch (e) {
+        console.log(e);
+      }
+      res.json({ status: 200 });
+      break;
     case "GET":
       const pageIndex: any = req.query.pageIndex;
       const products = await db

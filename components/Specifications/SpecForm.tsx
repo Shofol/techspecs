@@ -14,6 +14,7 @@ import Image from "next/image";
 import { useS3Upload, getImageData } from "next-s3-upload";
 import SuggestionList from "./SuggestionList";
 import Link from "next/link";
+import { toast, ToastContainer } from "react-toastify";
 
 const SpecForm = ({ schema }: { schema: any }) => {
   const [finalData, setFinalData] = useState(schema);
@@ -134,6 +135,16 @@ const SpecForm = ({ schema }: { schema: any }) => {
             }),
           });
           res = await res.json();
+          toast(`Schema Updated`, {
+            position: "top-right",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
           setLoading(false);
         } catch (error) {
           console.log(error);
@@ -149,6 +160,16 @@ const SpecForm = ({ schema }: { schema: any }) => {
           });
           res = await res.json();
           setLoading(false);
+          toast(`Product Updated`, {
+            position: "top-right",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
         } catch (error) {
           console.log(error);
         }
@@ -184,8 +205,31 @@ const SpecForm = ({ schema }: { schema: any }) => {
       setschemaData(schema);
     });
     setFinalData(schema);
-    setSchemaChanged(false);
+    if (!isSchemaPage && !formik.dirty) {
+      deleteSpec();
+    }
+
+    if (isSchemaPage) {
+      setSchemaChanged(false);
+    }
     setLoading(false);
+  };
+
+  const deleteSpec = async () => {
+    let res: any = await fetch(`/api/specs?id=${router.query.id}`, {
+      method: "DELETE",
+    });
+    res = await res.json();
+    toast(`🗑️ Deleted ${router.query.id}!`, {
+      position: "top-right",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
   };
 
   const flattenObject = (object: any, parent: string, newObj: any = {}) => {
@@ -272,6 +316,15 @@ const SpecForm = ({ schema }: { schema: any }) => {
     setschemaData(tempSchema);
   };
 
+  const showCancelButton = () => {
+    if (!isSchemaPage) {
+      return true;
+    } else if (isSchemaPage && schemaChanged) {
+      return true;
+    }
+    return false;
+  };
+
   return (
     <>
       <div className="flex justify-between text-white bg-dark-blue px-10 pt-10 pb-28">
@@ -279,11 +332,11 @@ const SpecForm = ({ schema }: { schema: any }) => {
           {isSchemaPage ? (
             <>Schema Manager {schemaChanged}</>
           ) : (
-            <>Adding a new specification </>
+            <>Adding a Product </>
           )}
         </h1>
         <div>
-          {schemaChanged && (
+          {showCancelButton() && (
             <button className="text-xs px-6 py-3" onClick={handleCancel}>
               CANCEL
             </button>
@@ -316,7 +369,9 @@ const SpecForm = ({ schema }: { schema: any }) => {
             method="post"
             onSubmit={formik.handleSubmit}
             onChange={() => {
-              setSchemaChanged(true);
+              if (isSchemaPage) {
+                setSchemaChanged(true);
+              }
             }}
           >
             <Loader showLoader={loading} />
@@ -576,7 +631,7 @@ const SpecForm = ({ schema }: { schema: any }) => {
             )}
             <div className="flex justify-end my-6 ">
               <div>
-                {schemaChanged && (
+                {showCancelButton() && (
                   <button
                     type="button"
                     className="text-xs px-6 py-3"
@@ -610,6 +665,19 @@ const SpecForm = ({ schema }: { schema: any }) => {
           </form>
         </div>
       </div>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+      <ToastContainer />
     </>
   );
 };
