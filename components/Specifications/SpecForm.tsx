@@ -15,6 +15,7 @@ import { useS3Upload, getImageData } from "next-s3-upload";
 import SuggestionList from "./SuggestionList";
 import Link from "next/link";
 import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const SpecForm = ({ schema }: { schema: any }) => {
   const [finalData, setFinalData] = useState(schema);
