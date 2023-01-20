@@ -190,8 +190,7 @@ const Brands = ({ products }: any) => {
       });
       res = await res.json();
       setLoading(false);
-      // router.query = { id: res._id };
-      router.push(`/createSpec?id=${res._id}`);
+      router.push(`/add?id=${res._id}`);
     } catch (error) {
       console.log(error);
     }

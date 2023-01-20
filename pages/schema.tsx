@@ -8,7 +8,7 @@ export default function Schema(props: any) {
     <>
       <Head>
         <Head>
-          <title>Update Schema</title>
+          <title>Schema Manager</title>
           <meta name="description" content="TechSpecs" />
         </Head>
       </Head>
