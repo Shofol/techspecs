@@ -1,13 +1,6 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import {
-  useTable,
-  useSortBy,
-  useRowSelect,
-  Column,
-  TableInstance,
-  Row,
-} from "react-table";
+import { Column, Row } from "react-table";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -53,7 +46,11 @@ const Specifications = ({ products, totalSpecs }: any) => {
                   ? tableProps.row.original.image
                   : "/no-image.png"
               }
-              alt={tableProps.row.original.model}
+              alt={
+                tableProps.row.original.model
+                  ? tableProps.row.original.model
+                  : "no image found"
+              }
               width={100}
               height={100}
             />

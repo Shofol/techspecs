@@ -304,10 +304,17 @@ const Table = ({
 
   const handlePageClick = (event: any) => {
     const value = +event.target.innerHTML;
+    if (
+      (manualPagination && value > pageCount) ||
+      (!manualPagination && value > pageOptions.length)
+    ) {
+      return;
+    }
     if (value > 1) {
       if (
         currentPageList.findIndex((item) => item === value) ===
-        currentPageList.length - 1
+          currentPageList.length - 1 &&
+        currentPageList.length === 5
       ) {
         setCurrentPageList(
           [
@@ -328,6 +335,26 @@ const Table = ({
       ? Number(event.target.innerHTML) - 1
       : 0;
     gotoPage(page);
+  };
+
+  const handleLastPageClick = () => {
+    const currentPageLenght = Math.ceil(
+      manualPagination ? +pageCount % 5 : +pageOptions.length % 5
+    );
+    setCurrentPageList(
+      [...Array(+currentPageLenght + 1)]
+        .map((item, index) => +pageOptions.length - +index)
+        .sort((a, b) => a - b)
+    );
+
+    // );
+    setTimeout(() => {
+      handlePageClick(
+        manualPagination
+          ? { target: { innerHTML: pageCount } }
+          : { target: { innerHTML: pageOptions.length } }
+      );
+    }, 100);
   };
 
   // Render the UI for your table
@@ -457,13 +484,9 @@ const Table = ({
           </button>{" "}
           <button
             className="bg-white px-3 py-1 rounded-tr-md rounded-br-md hover:bg-slate-400 hover:text-white duration-100"
-            onClick={() =>
-              handlePageClick(
-                manualPagination
-                  ? { target: { innerHTML: pageCount } }
-                  : { target: { innerHTML: pageOptions.length } }
-              )
-            }
+            onClick={() => {
+              handleLastPageClick();
+            }}
             disabled={!canNextPage}
           >
             {">>"}
