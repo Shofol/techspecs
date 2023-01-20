@@ -1,8 +1,7 @@
 import Head from "next/head";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import Brands from "../components/Brands/Brands";
-import clientPromise from "../lib/mongodb";
+import Image from "next/image";
 
 export default function Home(props: any) {
   return (
@@ -13,36 +12,11 @@ export default function Home(props: any) {
       </Head>
       <main className="min-h-screen flex flex-col justify-between bg-light-gray">
         <Navbar />
-        <Brands products={props.products} />
+        <div className="bg-dark-blue flex justify-center py-10 max-w-lg mx-auto px-10">
+          <Image src="/logo.svg" width={200} height={200} alt="logo" />
+        </div>
         <Footer />
       </main>
     </>
   );
-}
-
-export async function getServerSideProps() {
-  try {
-    const client = await clientPromise;
-    const db = client.db("v4");
-
-    const products = await db
-      .collection("Product")
-      .aggregate([
-        {
-          $group: {
-            _id: "$Product.Brand",
-            document: { $push: { id: "$_id" } },
-            count: { $sum: 1 },
-          },
-        },
-        { $sort: { _id: 1 } },
-      ])
-      .toArray();
-
-    return {
-      props: { products: JSON.parse(JSON.stringify(products)) },
-    };
-  } catch (e) {
-    console.error(e);
-  }
 }

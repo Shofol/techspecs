@@ -57,7 +57,7 @@ const Navbar = () => {
           <Link className="pr-8 opacity-60 hover:opacity-100" href="/products">
             All Products
           </Link>
-          <Link className="pr-8 opacity-60 hover:opacity-100" href="">
+          <Link className="pr-8 opacity-60 hover:opacity-100" href="/brands">
             All Brands
           </Link>
           <Link
