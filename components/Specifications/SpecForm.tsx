@@ -327,6 +327,19 @@ const SpecForm = ({ schema }: { schema: any }) => {
 
   return (
     <>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+      <ToastContainer />
       <div className="flex justify-between text-white bg-dark-blue px-10 pt-10 pb-28">
         <h1 className="text-xl">
           {isSchemaPage ? (
@@ -665,19 +678,6 @@ const SpecForm = ({ schema }: { schema: any }) => {
           </form>
         </div>
       </div>
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
-      <ToastContainer />
     </>
   );
 };
