@@ -79,7 +79,8 @@ const SpecForm = ({ schema }: { schema: any }) => {
       }
       setTimeout(() => {
         storeFormValue();
-        const tempSchema = { ...schema };
+        const tempSchema = JSON.parse(JSON.stringify(schema));
+
         setschemaData(tempSchema);
         setFinalData(tempSchema);
       }, 200);
@@ -216,7 +217,7 @@ const SpecForm = ({ schema }: { schema: any }) => {
   ) => {
     setSchemaChanged(true);
     storeFormValue();
-    const tempSchema = { ...schema };
+    const tempSchema = JSON.parse(JSON.stringify(schema));
     Object.keys(tempSchema).map((key) => {
       if (
         typeof tempSchema[key] === "object" &&
@@ -226,11 +227,12 @@ const SpecForm = ({ schema }: { schema: any }) => {
         tempSchema[key][`${newName}`] = newValue;
       }
     });
+    console.log(schema);
     setschemaData(tempSchema);
   };
 
   const addNewSection = (key: string, value: string) => {
-    const tempSchema = { ...schema };
+    const tempSchema = JSON.parse(JSON.stringify(schema));
 
     setSchemaChanged(true);
     tempSchema[`${key}`] = value;
@@ -266,7 +268,7 @@ const SpecForm = ({ schema }: { schema: any }) => {
     storeFormValue();
     updateObject(key, value, schema);
     setSuggestions(initalSuggestion);
-    const tempSchema = { ...schema };
+    const tempSchema = JSON.parse(JSON.stringify(schema));
     setschemaData(tempSchema);
   };
 
@@ -274,7 +276,11 @@ const SpecForm = ({ schema }: { schema: any }) => {
     <>
       <div className="flex justify-between text-white bg-dark-blue px-10 pt-10 pb-28">
         <h1 className="text-xl">
-          {isSchemaPage ? <>Schema Manager</> : <>Adding a new specification</>}
+          {isSchemaPage ? (
+            <>Schema Manager {schemaChanged}</>
+          ) : (
+            <>Adding a new specification </>
+          )}
         </h1>
         <div>
           {schemaChanged && (
