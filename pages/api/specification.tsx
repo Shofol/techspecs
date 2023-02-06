@@ -11,17 +11,17 @@ export default async function handler(
   const client = await clientPromise;
   const db = client.db("v4");
   let bodyObject = req.body ? JSON.parse(req.body) : {};
-  // db.collection("Product").createIndex({ "Product.Brand": "text" });
+  // db.collection("products").createIndex({ "Product.Brand": "text" });
   const id: any = req.query.id;
 
   switch (req.method) {
     // case "POST":
-    //   await db.collection("Product").insertOne(bodyObject.value);
+    //   await db.collection("products").insertOne(bodyObject.value);
     //   res.json(bodyObject.value);
     //   break;
     case "PUT":
       await db
-        .collection("Product")
+        .collection("products")
         .replaceOne({ _id: new ObjectId(id) }, bodyObject.value);
       res.json(bodyObject.value);
       break;
@@ -29,7 +29,7 @@ export default async function handler(
     //   const entriesToDelete = bodyObject.value.map((entry: any) => ({
     //     "Product.Brand": { $eq: `${entry}` },
     //   }));
-    //   await db.collection("Product").deleteMany({
+    //   await db.collection("products").deleteMany({
     //     $or: entriesToDelete,
     //   });
     //   res.json({ status: 200, data: bodyObject.value });
@@ -37,7 +37,7 @@ export default async function handler(
     case "GET":
       //   const id: any = req.query.id;
       const products = await db
-        .collection("Product")
+        .collection("products")
         .findOne({ _id: new ObjectId(id) });
       // .toArray();
       res.json({ status: 200, data: products });

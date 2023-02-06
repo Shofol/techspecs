@@ -44,7 +44,8 @@ const Brands = ({ products }: any) => {
       method: "GET",
     });
     res = await res.json();
-    const obj = res.data[0].data;
+    console.log(res);
+    const obj = res.data[0]?.data;
     setSchema(obj);
     setIsLoading(false);
   };

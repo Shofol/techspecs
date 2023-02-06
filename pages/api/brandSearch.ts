@@ -13,7 +13,7 @@ export default async function handler(
   switch (req.method) {
     // case "PUT":
     //   await db
-    //     .collection("Product")
+    //     .collection("products")
     //     .updateMany(
     //       { "Product.Brand": { $eq: bodyObject.prevValue } },
     //       { $set: { "Product.Brand": bodyObject.value } }
@@ -24,7 +24,7 @@ export default async function handler(
     //   const entriesToDelete = bodyObject.value.map((entry: any) => ({
     //     "Product.Brand": { $eq: `${entry}` },
     //   }));
-    //   await db.collection("Product").deleteMany({
+    //   await db.collection("products").deleteMany({
     //     $or: entriesToDelete,
     //   });
     //   res.json({ status: 200, data: bodyObject.value });
@@ -33,7 +33,7 @@ export default async function handler(
       const searchText: any = req.query.searchText;
       const pageIndex: any = req.query.pageIndex;
       const products = await db
-        .collection("Product")
+        .collection("products")
         .aggregate([
           {
             $match: { "Product.Brand": { $regex: /Apple/i } },

@@ -8,16 +8,16 @@ export default async function handler(req: any, res: NextApiResponse) {
   const client = await clientPromise;
   const db = client.db("v4");
   let bodyObject = req.body ? JSON.parse(req.body) : {};
-  // db.collection("Product").createIndex({ "Product.Brand": "text" });
+  // db.collection("products").createIndex({ "Product.Brand": "text" });
 
   switch (req.method) {
     case "POST":
-      await db.collection("Product").insertOne(bodyObject.value);
+      await db.collection("products").insertOne(bodyObject.value);
       res.json(bodyObject.value);
       break;
     // case "PUT":
     //   await db
-    //     .collection("Product")
+    //     .collection("products")
     //     .updateMany(
     //       { "Product.Brand": { $eq: bodyObject.prevValue } },
     //       { $set: { "Product.Brand": bodyObject.value } }
@@ -26,7 +26,7 @@ export default async function handler(req: any, res: NextApiResponse) {
     //   break;
     case "DELETE":
       try {
-        db.collection("Product").deleteOne({ _id: new ObjectId(req.query.id) });
+        db.collection("products").deleteOne({ _id: new ObjectId(req.query.id) });
       } catch (e) {
         console.log(e);
       }
@@ -35,7 +35,7 @@ export default async function handler(req: any, res: NextApiResponse) {
     case "GET":
       const pageIndex: any = req.query.pageIndex;
       const products = await db
-        .collection("Product")
+        .collection("products")
         .find({})
         .sort({ "Product.Brand": 1 })
         .skip(+pageIndex * 20)

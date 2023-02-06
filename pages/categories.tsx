@@ -29,7 +29,7 @@ export async function getServerSideProps() {
     const db = client.db("v4");
 
     const products = await db
-      .collection("Product")
+      .collection("products")
       .aggregate([
         {
           $group: {

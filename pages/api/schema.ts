@@ -19,7 +19,7 @@ export default async function handler(
     //   const entriesToDelete = bodyObject.value.map((entry: any) => ({
     //     "Product.Category": { $eq: `${entry}` },
     //   }));
-    //   await db.collection("Product").deleteMany({
+    //   await db.collection("products").deleteMany({
     //     $or: entriesToDelete,
     //   });
     //   res.json({ status: 200, data: bodyObject.value });

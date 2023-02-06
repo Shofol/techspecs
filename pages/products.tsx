@@ -33,12 +33,12 @@ export async function getServerSideProps() {
     const db = client.db("v4");
 
     const products = await db
-      .collection("Product")
+      .collection("products")
       .find({})
       .sort({ "Product.Brand": 1 })
       .limit(10)
       .toArray();
-    const count = await db.collection("Product").countDocuments({});
+    const count = await db.collection("products").countDocuments({});
     return {
       props: {
         products: JSON.parse(JSON.stringify(products)),

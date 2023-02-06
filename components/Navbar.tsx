@@ -50,10 +50,10 @@ const Navbar = () => {
       <Loader showLoader={isLoading} />
 
       <div className="flex flex-1 items-center">
-        <Link href="/">
+        {/* <Link href="/">
           <img src="/logo.svg" alt="" width="140px" />
-        </Link>
-        <div className="flex items-center px-20 text-sm">
+        </Link> */}
+        <div className="flex items-center  text-sm">
           <Link className="pr-8 opacity-60 hover:opacity-100" href="/products">
             All Products
           </Link>
@@ -77,7 +77,7 @@ const Navbar = () => {
           </Link>
         </div>
       </div>
-      <div className="flex items-center">
+      {/* <div className="flex items-center">
         <button>
           <img
             src="/notification.svg"
@@ -95,7 +95,7 @@ const Navbar = () => {
           alt="user image"
           className="w-12 h-12 rounded-full"
         />
-      </div>
+      </div> */}
     </div>
   );
 };

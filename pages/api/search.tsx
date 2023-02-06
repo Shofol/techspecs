@@ -10,7 +10,7 @@ export default async function handler(
   const client = await clientPromise;
   const db = client.db("v4");
   let bodyObject = req.body ? JSON.parse(req.body) : {};
-  //   db.collection("Product").createIndex({
+  //   db.collection("products").createIndex({
   //     "Product.Brand": "text",
   //     "Product.Model": "text",
   //     "Product.Version": "text",
@@ -20,7 +20,7 @@ export default async function handler(
   switch (req.method) {
     // case "PUT":
     //   await db
-    //     .collection("Product")
+    //     .collection("products")
     //     .updateMany(
     //       { "Product.Brand": { $eq: bodyObject.prevValue } },
     //       { $set: { "Product.Brand": bodyObject.value } }
@@ -31,7 +31,7 @@ export default async function handler(
     //   const entriesToDelete = bodyObject.value.map((entry: any) => ({
     //     "Product.Brand": { $eq: `${entry}` },
     //   }));
-    //   await db.collection("Product").deleteMany({
+    //   await db.collection("products").deleteMany({
     //     $or: entriesToDelete,
     //   });
     //   res.json({ status: 200, data: bodyObject.value });
@@ -40,14 +40,14 @@ export default async function handler(
       const searchText: any = req.query.searchText;
       const pageIndex: any = req.query.pageIndex;
       const products = await db
-        .collection("Product")
+        .collection("products")
         .find({ $text: { $search: `'${searchText}'` } })
         .skip(+pageIndex * 20)
         .limit(20)
         .toArray();
 
       const count = await db
-        .collection("Product")
+        .collection("products")
         .count({ $text: { $search: `'${searchText}'` } });
       res.json({
         status: 200,
