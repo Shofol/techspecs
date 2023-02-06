@@ -37,6 +37,7 @@ export async function getServerSideProps() {
         },
         { $sort: { _id: 1 } },
       ])
+      .limit(100)
       .toArray();
 
     return {
